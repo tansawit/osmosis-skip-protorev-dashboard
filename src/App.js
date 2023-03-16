@@ -1,23 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import Accounts from './components/Accounts';
+import Pool from './components/Pool';
+import ProfitsAndTrades from './components/ProfitsAndTrades';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div style={{ marginLeft: '1%' }}>
+      <>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img
+            src="https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg"
+            alt="osmosis logo"
+            width="50px"
+          />
+          <img
+            src="https://pbs.twimg.com/profile_images/1558992554347085825/yiBiZXOQ_400x400.jpg"
+            alt="skip logo"
+            width="50px"
+            height="50px"
+          />
+          <h1>Osmosis-Skip ProtoRev Module Dashboard</h1>
+        </div>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Powered by <a href="https://celat.one">Celatone</a> &{' '}
+          <a href="https://twitter.com/alleslabs">Alles Labs</a>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      </>
+      <ProfitsAndTrades />
+      <Accounts />
+      <Pool />
     </div>
   );
 }
