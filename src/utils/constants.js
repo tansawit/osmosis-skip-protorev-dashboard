@@ -6,7 +6,7 @@ export const LCD = {
 };
 
 export const GRAPHQL = {
-  mainnet: '',
+  mainnet: 'https://osmosis-mainnet-graphql.alleslabs.dev/v1/graphql',
   testnet: 'https://osmosis-testnet-graphql.alleslabs.dev/v1/graphql',
 };
 

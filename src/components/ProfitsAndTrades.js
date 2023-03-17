@@ -1,4 +1,4 @@
-import { getProtoRevData } from '../utils/query';
+import { getPools, getProtoRevData } from '../utils/query';
 import { useState, useEffect } from 'react';
 
 import * as React from 'react';
@@ -24,13 +24,14 @@ export default function Trades() {
   const [tradeCount, setTradeCount] = useState('');
   const [allProfits, setAllProfits] = useState([]);
   const [routeStats, setRouteStats] = useState([]);
+  const [pools, setPools] = useState([]);
 
   useEffect(() => {
     const getDenom = async () => {
       const data = await getProtoRevData('base_denoms');
       const result = await Promise.all(
         data['base_denoms'].map(async (denom) => {
-          return await getAssetData('osmo-test-4', denom);
+          return await getAssetData('osmosis-1', denom);
         })
       );
 
@@ -41,68 +42,90 @@ export default function Trades() {
       setBaseDenoms(denoms);
     };
 
-    // getProtoRevData('base_denoms').then((data) => {
-    //   console.log('denoms', data);
-    //   let denoms = {};
-    //   data['base_denoms'].map(async (denom) => {
-    //     const assetData = await getAssetData('osmo-test-4', denom);
-    //     denoms[denom[['denom']]] = assetData;
-    //   });
-    //   setBaseDenoms(denoms);
-    // });
+    const getPoolData = async () => {
+      const data = await getPools();
+      let poolData = {};
+      data.map((pool) => {
+        return (poolData[pool['id']] = pool);
+      });
+      setPools(poolData);
+    };
+
     getDenom();
+    getPoolData();
     getProtoRevData('number_of_trades').then((data) => setTradeCount(data['number_of_trades']));
     getProtoRevData('all_profits').then((data) => setAllProfits(data['profits']));
-    getRouteStats().then((data) => setRouteStats(data));
+    getRouteStats().then((data) =>
+      setRouteStats(
+        data.sort((a, b) => (Number(a.number_of_trades) > Number(b.number_of_trades) ? -1 : 1))
+      )
+    );
   }, []);
+
+  const prettifyRoute = (route) => {
+    let outputRoute = [];
+    route.map((pool) => {
+      if (Number(pool) in pools) {
+        outputRoute.push(pools[Number(pool)]['name'] + ' (' + pool + ')');
+      } else {
+        outputRoute.push('pool' + pool);
+      }
+      return outputRoute;
+    });
+    return outputRoute.join(' --> ');
+  };
 
   return (
     <div style={{ width: '60%' }}>
       <h1>Trades</h1>
       <p>Total Number of Trades: {tradeCount}</p>
       <TradesByBlocks />
-      <h2>Profits by Asset</h2>
+      <h2>Profits</h2>
       {allProfits && (
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Asset</TableCell>
-                <TableCell align="right">Cumulative Profit</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {allProfits.map((profit) => {
-                return (
-                  <TableRow
-                    key={profit.denom}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    {baseDenoms[profit.denom] ? (
-                      <>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          style={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          <img
-                            src={baseDenoms[profit.denom].logo}
-                            width="20px"
-                            style={{ marginRight: '5px' }}
-                          />
-                          {baseDenoms[profit.denom].symbol}
-                        </TableCell>
-                        <TableCell align="right">
-                          {profit.amount / Math.pow(10, baseDenoms[profit.denom].precision)}
-                        </TableCell>
-                      </>
-                    ) : null}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <>
+          <h3>Summary</h3>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Asset</TableCell>
+                  <TableCell align="right">Cumulative Profit</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {allProfits.map((profit) => {
+                  return (
+                    <TableRow
+                      key={profit.denom}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      {baseDenoms[profit.denom] ? (
+                        <>
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <img
+                              src={baseDenoms[profit.denom].logo}
+                              width="20px"
+                              style={{ marginRight: '5px' }}
+                            />
+                            {baseDenoms[profit.denom].symbol}
+                          </TableCell>
+                          <TableCell align="right">
+                            {profit.amount / Math.pow(10, baseDenoms[profit.denom].precision)}{' '}
+                            {baseDenoms[profit.denom].symbol}
+                          </TableCell>
+                        </>
+                      ) : null}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
       {<ProfitsBydenom />}
       <h2>Profits by Route</h2>
@@ -124,7 +147,7 @@ export default function Trades() {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {route.route.toString()}
+                      {prettifyRoute(route.route)}
                     </TableCell>
                     <TableCell align="right">{route.number_of_trades}</TableCell>
                     <TableCell align="right">

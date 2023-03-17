@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LCD, PROTOREV, CELATONE_API, NETWORK } from './constants';
+import { LCD, PROTOREV, CELATONE_API, NETWORK, GRAPHQL } from './constants';
 
 export async function getProtoRevData(path) {
   const endpoint = `${LCD[NETWORK]}/${PROTOREV}/${path}`;
@@ -8,7 +8,12 @@ export async function getProtoRevData(path) {
 }
 
 export async function getAssets() {
-  const { data } = await axios.get(`${CELATONE_API}/assets/osmosis/osmo-test-4/prices`);
+  const { data } = await axios.get(`${CELATONE_API}/assets/osmosis/osmosis-1/prices`);
+  return data;
+}
+
+export async function getPools() {
+  const { data } = await axios.get(`${CELATONE_API}/pools/osmosis/osmosis-1`);
   return data;
 }
 
@@ -29,7 +34,7 @@ export async function getHistoricalTrades() {
   var config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'https://osmosis-testnet-graphql.alleslabs.dev/v1/graphql',
+    url: GRAPHQL[NETWORK],
     headers: {
       'Content-Type': 'application/json',
     },
@@ -61,7 +66,7 @@ export async function getProfitsByDenom(denom, precision) {
   var config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'https://osmosis-testnet-graphql.alleslabs.dev/v1/graphql',
+    url: GRAPHQL[NETWORK],
     headers: {
       'Content-Type': 'application/json',
     },
