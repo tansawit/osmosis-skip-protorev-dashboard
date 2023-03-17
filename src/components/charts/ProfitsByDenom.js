@@ -24,6 +24,8 @@ export default function ProfitsBydenom() {
       let profits = [];
       for (const [key, value] of Object.entries(denoms)) {
         let denomProfit = await getProfitsByDenom(key, 6);
+        denomProfit = denomProfit.map((v) => ({ ...v, symbol: value['symbol'] }));
+
         profits.push({ profitData: denomProfit, assetData: value });
       }
       console.log(profits);
@@ -44,7 +46,9 @@ export default function ProfitsBydenom() {
           <p className="label">{`Timestamp: ${Date(
             payload[0]['payload']['block']['timestamp']
           )}`}</p>
-          <p className="label">{`Cumulative Profit: ${payload[0].value} OSMO`}</p>
+          <p className="label">
+            {`Cumulative Profit: ${payload[0].value}`} {payload[0].payload.symbol}
+          </p>
         </div>
       );
     }
