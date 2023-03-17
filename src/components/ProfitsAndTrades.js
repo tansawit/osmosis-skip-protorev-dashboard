@@ -66,9 +66,9 @@ export default function Trades() {
     let outputRoute = [];
     route.map((pool) => {
       if (Number(pool) in pools) {
-        outputRoute.push(pools[Number(pool)]['name'] + ' (' + pool + ')');
+        outputRoute.push(pools[Number(pool)]['name'] + ' (Pool ' + pool + ')');
       } else {
-        outputRoute.push('pool' + pool);
+        outputRoute.push('Pool ' + pool);
       }
       return outputRoute;
     });
