@@ -24,7 +24,11 @@ export default function ProfitsBydenom() {
       let profits = [];
       for (const [key, value] of Object.entries(denoms)) {
         let denomProfit = await getProfitsByDenom(key, 6);
-        denomProfit = denomProfit.map((v) => ({ ...v, symbol: value['symbol'] }));
+        denomProfit = denomProfit.map((v) => ({
+          ...v,
+          symbol: value['symbol'],
+          amount: Number(v['amount']),
+        }));
 
         profits.push({ profitData: denomProfit, assetData: value });
       }
@@ -82,9 +86,8 @@ export default function ProfitsBydenom() {
                 bottom: 5,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="block_height" />
-              <YAxis />
+              <YAxis type="number" />
               <Tooltip content={<CustomTooltip />} />
               <Area type="linear" dataKey="amount" fill="#801ded" />
             </AreaChart>
