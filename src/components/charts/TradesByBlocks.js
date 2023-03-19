@@ -1,4 +1,4 @@
-import { XAxis, YAxis, Area, AreaChart, Tooltip } from 'recharts';
+import { XAxis, YAxis, Area, AreaChart, Tooltip, BarChart, Bar } from 'recharts';
 
 import { useEffect, useState } from 'react';
 import { getHistoricalTrades } from '../../utils/query';
@@ -9,11 +9,16 @@ dayjs.extend(utc);
 
 export default function TradesByBlocks() {
   const [trades, setTrades] = useState([]);
+  const [tradeDelta, setTradeDelta] = useState([]);
 
   useEffect(() => {
     getHistoricalTrades().then((data) => {
-      /*       let delta = [];
-      delta.push({ block_height: data['block_height'], count: 0 });
+      let delta = [];
+      delta.push({
+        block_height: data[0]['block_height'],
+        count: 0,
+        block: { timestamp: data[0]['block']['timestamp'] },
+      });
       for (var i = 1; i < data.length; i++) {
         delta.push({
           block_height: data[i]['block_height'],
@@ -21,7 +26,7 @@ export default function TradesByBlocks() {
           block: { timestamp: data[i]['block']['timestamp'] },
         });
       }
-      setTradeDelta(delta); */
+      setTradeDelta(delta);
       setTrades(data);
     });
   }, []);
@@ -44,7 +49,8 @@ export default function TradesByBlocks() {
 
   return (
     <div>
-      <h2>Cumulative Trade Count</h2>
+      <h2>Trade Statistics</h2>
+      <h3>Trade Growth</h3>
       <AreaChart
         width={1200}
         height={300}
@@ -59,7 +65,8 @@ export default function TradesByBlocks() {
         <Tooltip content={<CustomTooltip />} />
         <Area dataKey="count" fill="#801ded" />
       </AreaChart>
-      {/*       <BarChart
+      {/*       <h3>Trade by Block</h3>
+      <BarChart
         width={1200}
         height={300}
         data={tradeDelta}
@@ -71,7 +78,7 @@ export default function TradesByBlocks() {
         <XAxis dataKey="block_height" padding={{ top: 10000 }}></XAxis>
         <YAxis />
         <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="count" fill="#000000" />
+        <Bar dataKey="count" fill="#ffb32c" />
       </BarChart> */}
     </div>
   );

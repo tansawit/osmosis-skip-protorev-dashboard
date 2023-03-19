@@ -10,7 +10,6 @@ dayjs.extend(utc);
 
 export default function ProfitsBydenom() {
   const [profits, setProfits] = useState([]);
-  const [profit, setProfit] = useState([]);
 
   useEffect(() => {
     const getProfits = async () => {
@@ -36,14 +35,9 @@ export default function ProfitsBydenom() {
 
         profits.push({ profitData: denomProfit, assetData: value });
       }
-      console.log(profits);
       setProfits(profits);
     };
     getProfits();
-
-    getProfitsByDenom('uosmo', 6).then((data) => {
-      setProfit(data);
-    });
   }, []);
 
   function CustomTooltip({ payload, label, active }) {
@@ -66,7 +60,8 @@ export default function ProfitsBydenom() {
 
   return (
     <>
-      <h3>Profits by Asset</h3>
+      <h2>Profits Statistics</h2>
+      <h3>Profits by Base Asset</h3>
       {profits.map((data) => {
         return (
           <>

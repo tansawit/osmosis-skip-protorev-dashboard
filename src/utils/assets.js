@@ -12,6 +12,7 @@ export async function getAssetData(network, asset) {
     assetData['symbol'] = data['symbol'];
     assetData['precision'] = data['precision'];
     assetData['logo'] = data['logo'];
+    assetData['price'] = data['price'];
   } catch {
     if (asset['denom'].startsWith('ibc/')) {
       assetData['symbol'] =

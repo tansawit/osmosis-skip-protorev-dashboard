@@ -13,6 +13,7 @@ import Paper from '@mui/material/Paper';
 import { getAssetData } from '../utils/assets';
 import TradesByBlocks from './charts/TradesByBlocks';
 import ProfitsBydenom from './charts/ProfitsByDenom';
+import { getValue } from '../utils/price';
 
 async function getRouteStats() {
   const routeStats = await getProtoRevData('all_route_statistics');
@@ -77,13 +78,27 @@ export default function Trades() {
 
   return (
     <div style={{ width: '60%' }}>
-      <h1>Trades</h1>
+      <h1>Summary</h1>
+      <h2>Trades</h2>
       <p>Total Number of Trades: {tradeCount}</p>
-      <TradesByBlocks />
       <h2>Profits</h2>
+      <p>
+        Total Profits: $
+        {allProfits.reduce((acc, cur) => {
+          if (baseDenoms[cur.denom]) {
+            return (
+              Number(acc) +
+              Number(
+                getValue(cur.amount, baseDenoms[cur.denom].precision, baseDenoms[cur.denom].price)
+              )
+            );
+          } else {
+            return Number(acc);
+          }
+        }, 0)}
+      </p>
       {allProfits && (
         <>
-          <h3>Summary</h3>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="table">
               <TableHead>
@@ -115,7 +130,13 @@ export default function Trades() {
                           </TableCell>
                           <TableCell align="right">
                             {profit.amount / Math.pow(10, baseDenoms[profit.denom].precision)}{' '}
-                            {baseDenoms[profit.denom].symbol}
+                            {baseDenoms[profit.denom].symbol} ($
+                            {getValue(
+                              profit.amount,
+                              baseDenoms[profit.denom].precision,
+                              baseDenoms[profit.denom].price
+                            )}
+                            )
                           </TableCell>
                         </>
                       ) : null}
@@ -127,6 +148,8 @@ export default function Trades() {
           </TableContainer>
         </>
       )}
+      <TradesByBlocks />
+      <h2>Profits</h2>
       {<ProfitsBydenom />}
       <h2>Profits by Route</h2>
       {routeStats.length > 0 ? (
@@ -164,6 +187,13 @@ export default function Trades() {
                           {route.profits[0].amount /
                             Math.pow(10, baseDenoms[route.profits[0].denom].precision)}{' '}
                           {baseDenoms[route.profits[0].denom].symbol}
+                          ($
+                          {getValue(
+                            route.profits[0].amount,
+                            baseDenoms[route.profits[0].denom].precision,
+                            baseDenoms[route.profits[0].denom].price
+                          )}
+                          )
                         </div>
                       ) : null}
                     </TableCell>
