@@ -2,6 +2,10 @@ import { XAxis, YAxis, Area, AreaChart, Tooltip } from 'recharts';
 
 import { useEffect, useState } from 'react';
 import { getHistoricalTrades } from '../../utils/query';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export default function TradesByBlocks() {
   const [trades, setTrades] = useState([]);
@@ -27,9 +31,9 @@ export default function TradesByBlocks() {
       return (
         <div className="custom-tooltip">
           <p className="label">{`Block Height: ${label}`}</p>
-          <p className="label">{`Timestamp: ${Date(
-            payload[0]['payload']['block']['timestamp']
-          )}`}</p>
+          <p className="label">{`Timestamp: ${dayjs
+            .utc(payload[0]['payload']['block']['timestamp'])
+            .toDate()}`}</p>
           <p className="label">{`Trade Count: ${payload[0].value}`}</p>
         </div>
       );

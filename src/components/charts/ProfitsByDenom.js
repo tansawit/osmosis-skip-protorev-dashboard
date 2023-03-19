@@ -3,6 +3,10 @@ import { CartesianGrid, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts'
 import { useEffect, useState } from 'react';
 import { getProfitsByDenom, getProtoRevData } from '../../utils/query';
 import { getAssetData } from '../../utils/assets';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export default function ProfitsBydenom() {
   const [profits, setProfits] = useState([]);
@@ -47,9 +51,9 @@ export default function ProfitsBydenom() {
       return (
         <div className="custom-tooltip">
           <p className="label">{`Block Height: ${label}`}</p>
-          <p className="label">{`Timestamp: ${Date(
-            payload[0]['payload']['block']['timestamp']
-          )}`}</p>
+          <p className="label">{`Timestamp: ${dayjs
+            .utc(payload[0]['payload']['block']['timestamp'])
+            .toDate()}`}</p>
           <p className="label">
             {`Cumulative Profit: ${payload[0].value}`} {payload[0].payload.symbol}
           </p>
